@@ -1,98 +1,248 @@
 {
-  "name": "P N Sumanth",
-  "email": "podonolanasumanth@gmail.com",
-  "phone": "+91-7619408618",
-  "linkedin": "https://linkedin.com/in/pnsumanth",
-  "github": "https://github.com/sumanthpn07",
-  "location": "Bangalore, India",
-  "currentLocation": "USA - San Francisco/Bangalore",
-  "yearsOfExperience": 5,
-  "currentTitle": "Software Developer",
-  "currentCompany": "AtoB Supplychain Technologies",
+  "personalInfo": {
+    "name": "P N Sumanth",
+    "firstName": "P N",
+    "lastName": "Sumanth",
+    "email": "podonolanasumanth@gmail.com",
+    "phone": "+91-7619408618",
+    "linkedin": "https://linkedin.com/in/pnsumanth",
+    "github": "https://github.com/sumanthpn07",
+    "location": "Bangalore, India",
+    "currentLocation": "USA - San Francisco / Bangalore",
+    "willingToRelocate": true,
+    "workAuthorization": {
+      "india": "Authorized to work",
+      "usa": "May require sponsorship"
+    }
+  },
+
+  "professional": {
+    "yearsOfExperience": 5,
+    "currentTitle": "Software Developer",
+    "currentCompany": "AtoB Supplychain Technologies",
+    "noticePeriod": "Immediately / 2 weeks",
+    "expectedSalary": "Negotiable",
+    "preferredWorkType": ["Remote", "Hybrid", "On-site"]
+  },
 
   "targetRoles": [
     "Software Engineer",
     "Software Developer",
     "Full Stack Developer",
+    "Full Stack Engineer",
     "Backend Engineer",
+    "Backend Developer",
     "Senior Software Engineer",
     "Node.js Developer",
-    "React Developer"
+    "React Developer",
+    "Ruby on Rails Developer"
   ],
 
   "preferredLocations": [
     "Remote",
-    "San Francisco",
-    "Bangalore",
+    "San Francisco, CA",
+    "Bangalore, India",
     "USA",
     "India"
   ],
 
   "skills": {
-    "languages": ["JavaScript", "Ruby", "TypeScript", "Bash", "C/C++", "Java", "Solidity", "SQL", "NoSQL"],
-    "frameworks": ["Node.js", "ReactJS", "Ruby on Rails", "TensorFlow", "React Native", "NextJS", "Socket.IO", "gRPC", "Whatsapp API"],
-    "tools": ["Kubernetes", "Jenkins", "Grafana", "Docker", "GIT", "PostgreSQL", "MySQL", "MongoDB", "OTA", "Graphite"],
-    "platforms": ["AWS", "GCP", "Azure", "Notion", "Mixpanel"]
+    "languages": [
+      "JavaScript",
+      "Ruby",
+      "TypeScript",
+      "Bash",
+      "C/C++",
+      "Java",
+      "Solidity",
+      "SQL",
+      "NoSQL"
+    ],
+    "frameworks": [
+      "Node.js",
+      "ReactJS",
+      "Ruby on Rails",
+      "TensorFlow",
+      "React Native",
+      "Next.js",
+      "Socket.IO",
+      "gRPC",
+      "WhatsApp API",
+      "Express.js",
+      "Angular",
+      "AngularJS"
+    ],
+    "tools": [
+      "Kubernetes",
+      "Jenkins",
+      "Grafana",
+      "Docker",
+      "Git",
+      "PostgreSQL",
+      "MySQL",
+      "MongoDB",
+      "OTA",
+      "Graphite",
+      "Promtail",
+      "Loki",
+      "Sequelize"
+    ],
+    "platforms": [
+      "AWS",
+      "GCP",
+      "Azure",
+      "Notion",
+      "Mixpanel",
+      "Firebase",
+      "EC2"
+    ],
+    "concepts": [
+      "Microservices Architecture",
+      "REST APIs",
+      "WebSockets",
+      "Real-time Systems",
+      "Payment Systems",
+      "Risk Management",
+      "CI/CD",
+      "DevOps",
+      "Blockchain",
+      "Smart Contracts"
+    ],
+    "softSkills": [
+      "Leadership",
+      "Event Management",
+      "Writing",
+      "Public Speaking",
+      "Time Management"
+    ]
   },
 
   "education": {
-    "degree": "Bachelor of Technology - CSE, Cloud Technology and Information Security",
+    "degree": "Bachelor of Technology",
+    "major": "CSE, Cloud Technology and Information Security",
     "university": "JAIN (Deemed-to-be University), Faculty of Engineering & Technology (JU-FET)",
     "location": "Bangalore, India",
-    "duration": "July 2018 - June 2022"
+    "startDate": "July 2018",
+    "endDate": "June 2022",
+    "courses": [
+      "Operating Systems",
+      "Data Structures",
+      "Analysis Of Algorithms",
+      "Artificial Intelligence",
+      "Cyber Security",
+      "Networking",
+      "Databases"
+    ]
   },
-
-  "workAuthorization": "Authorized to work in India, may require sponsorship for USA",
 
   "experience": [
     {
       "company": "AtoB Supplychain Technologies",
       "title": "Software Developer",
+      "type": "Full-time",
       "location": "USA - San Francisco/Bangalore",
-      "duration": "Jan 2025 - Present",
+      "startDate": "Jan 2025",
+      "endDate": "Jun 2025",
+      "current": true,
       "highlights": [
-        "Payment Systems & Risk Management using Ruby on Rails, Stripe, Highnote APIs",
-        "Improved operational efficiency by 35%",
-        "Implemented comprehensive RSpec test coverage, reducing production incidents by 30%"
-      ]
+        "Designed and implemented core features for the Money Team using Ruby on Rails",
+        "Integrated Stripe and Highnote APIs for secure transaction processing",
+        "Built AI-ready risk review and automated alerts, improving operational efficiency by 35%",
+        "Implemented RAG-compatible logs for intelligent summaries and reviews",
+        "Enhanced system reliability with comprehensive RSpec test coverage",
+        "Reduced production incidents by 30%"
+      ],
+      "technologies": ["Ruby on Rails", "Stripe API", "Highnote API", "RSpec", "AI/ML"]
     },
     {
       "company": "Logipe Fintech Pvt. Ltd.",
       "title": "Software Developer",
+      "type": "Full-time",
       "location": "Bangalore",
-      "duration": "Feb 2022 - Dec 2024",
+      "startDate": "Feb 2022",
+      "endDate": "Dec 2024",
+      "current": false,
       "highlights": [
-        "Built full-stack financial platform for fleet owners using Node.js, React.js, Angular",
-        "Microservice architecture with SQS, WAF, gRPC",
-        "Deployed services in Kubernetes, migrated AWS to GCP",
-        "Built real-time systems with Socket.IO and WhatsApp chat integration"
-      ]
+        "Engineered from scratch a full-stack financial platform for commercial fleet owners",
+        "Built backend services using Node.js with Sequelize for database management",
+        "Developed web platform using Next.js, React.js, Angular, and AngularJS",
+        "Implemented microservice architecture using SQS, WAF, and gRPC",
+        "Integrated comprehensive logging service with Grafana, Promtail, and Loki",
+        "Achieved 50% faster issue resolution time",
+        "Built automated payment refund system with 30% decrease in processing time",
+        "Deployed services in Kubernetes and EC2",
+        "Configured Jenkins for 15 microservices, improving deployment speed by 40%",
+        "Migrated all servers from AWS to GCP",
+        "Developed real-time systems using Socket.IO for live location tracking",
+        "Built WhatsApp chat system using Cloud API",
+        "Implemented OTA app releases for React Native iOS/Android app",
+        "Achieved 40% reduction in operational inefficiencies"
+      ],
+      "technologies": ["Node.js", "React.js", "Next.js", "Angular", "Sequelize", "Kubernetes", "Jenkins", "Grafana", "Socket.IO", "React Native", "TypeScript", "Firebase", "AWS", "GCP", "gRPC", "SQS"]
     },
     {
       "company": "CodeQuotient",
       "title": "Software Developer Intern",
+      "type": "Internship",
       "location": "Remote",
-      "duration": "Nov 2021 - Feb 2022",
+      "startDate": "Nov 2021",
+      "endDate": "Feb 2022",
+      "current": false,
       "highlights": [
-        "Full stack development training",
-        "API integrations for 10 enterprise partners"
-      ]
+        "Completed full stack development training with practical problem-solving",
+        "Streamlined API integrations for 10 enterprise partners",
+        "Reduced integration time by 20%",
+        "Enhanced platform functionality resulting in 30% reduction in response time"
+      ],
+      "technologies": ["Full Stack Development", "API Integration"]
     }
   ],
 
   "projects": [
-    "WeCon - Video calling app with WebRTC in Kotlin",
-    "Ecommerce Application - MERN stack",
-    "Dwitter - Decentralized social media with Solidity and Ethereum"
+    {
+      "name": "WeCon",
+      "description": "Engineered a robust video calling application in Kotlin, utilizing WebRTC technology to support high-quality communication; successfully reduced latency by 40%, ensuring a user-friendly interface that facilitated smooth interactions across devices.",
+      "technologies": ["Kotlin", "WebRTC"]
+    },
+    {
+      "name": "Ecommerce Application",
+      "description": "Designed and Constructed a highly functional eCommerce application using the MERN stack (MongoDB, Express.js, React.js, Node.js), showcasing exceptional proficiency in full stack development and delivering a robust, scalable, and user-friendly online shopping experience.",
+      "technologies": ["MongoDB", "Express.js", "React.js", "Node.js", "MERN Stack"]
+    },
+    {
+      "name": "Dwitter",
+      "description": "A decentralized social media application modeled after Twitter, utilizing blockchain technology with Solidity and Ethereum. Designed and implemented smart contracts to manage user interactions and content securely, creating a transparent and immutable platform for decentralized communication.",
+      "technologies": ["Solidity", "Ethereum", "Blockchain", "Smart Contracts"]
+    }
   ],
 
   "commonQuestions": {
-    "whyThisCompany": "I'm excited about {company} because of its innovative approach to solving real-world problems. My experience building scalable systems at AtoB and Logipe, combined with my expertise in {relevantSkill}, makes me confident I can contribute meaningfully to your team.",
-    "whyThisRole": "This role aligns perfectly with my background in full-stack development and my passion for building robust, scalable systems. At Logipe, I engineered a complete financial platform from scratch, and I'm eager to bring that same drive to {company}.",
-    "salary": "Negotiable based on the role and responsibilities",
-    "startDate": "Immediately / 2 weeks notice",
-    "relocation": "Open to relocation",
-    "remoteWork": "Prefer remote but open to hybrid",
-    "coverLetterTemplate": "Dear Hiring Team,\n\nI am writing to express my interest in the {jobTitle} position at {company}. With 5 years of experience in full-stack development and a strong background in building scalable systems, I am confident in my ability to contribute to your team.\n\nAt my current role at AtoB Supplychain Technologies, I work on payment systems and risk management using Ruby on Rails and Stripe APIs. Previously at Logipe Fintech, I engineered a complete financial platform from scratch, implementing microservices architecture and real-time communication systems.\n\nI am particularly drawn to {company} because of {reason}. I would welcome the opportunity to discuss how my skills and experience align with your needs.\n\nBest regards,\nP N Sumanth"
-  }
+    "whyThisCompany": "I'm excited about {company} because of its innovative approach to solving real-world problems. With 5 years of experience building scalable full-stack systems at AtoB and Logipe - including payment platforms, microservices architecture, and real-time communication systems - I'm confident I can contribute meaningfully to your team and help drive impactful solutions.",
+
+    "whyThisRole": "This role aligns perfectly with my background in full-stack development and my passion for building robust, scalable systems. At Logipe, I engineered a complete financial platform from scratch serving commercial fleet owners, and at AtoB I've been working on critical payment systems. I'm eager to bring that same drive and expertise to {company}.",
+
+    "greatestStrength": "My greatest strength is my ability to architect and build complete systems from scratch. At Logipe, I engineered an entire fintech platform including microservices, real-time tracking, and mobile apps. I combine strong technical skills across the full stack with the ability to understand business requirements and deliver solutions that create real impact.",
+
+    "greatestWeakness": "I sometimes get deeply invested in optimizing systems beyond what's immediately necessary. I've learned to balance this by setting clear milestones and focusing on delivering value incrementally while keeping technical excellence in mind for future iterations.",
+
+    "whereDoYouSeeYourself": "In 5 years, I see myself leading engineering teams and architecting large-scale distributed systems. I want to continue growing technically while also mentoring other developers and contributing to the strategic technical direction of the company.",
+
+    "challengingProject": "At Logipe, I led the migration of all services from AWS to GCP while maintaining zero downtime. This involved coordinating 15 microservices, updating CI/CD pipelines, and ensuring data integrity throughout the transition. The project improved our deployment speed by 40% and reduced infrastructure costs.",
+
+    "whyLeavingCurrentJob": "I'm looking for new challenges and opportunities to work on cutting-edge technologies at scale. While I've learned tremendously at my current role, I'm excited about the possibility of contributing to {company}'s mission and growing alongside the team.",
+
+    "salary": "I'm flexible on compensation and more focused on finding the right role and team. I'm open to discussing a package that reflects the responsibilities and aligns with the market rate for this position.",
+
+    "startDate": "I can start immediately or within 2 weeks, depending on the requirements.",
+
+    "relocation": "Yes, I'm open to relocation for the right opportunity.",
+
+    "remoteWork": "I'm comfortable with remote, hybrid, or on-site arrangements. I have extensive experience working remotely and collaborating across time zones.",
+
+    "visaSponsorship": "For positions in the USA, I would require visa sponsorship. For India-based roles, I am fully authorized to work."
+  },
+
+  "coverLetterTemplate": "Dear Hiring Team,\n\nI am writing to express my interest in the {jobTitle} position at {company}. With 5 years of experience in full-stack development and a strong background in building scalable, production-grade systems, I am confident in my ability to contribute to your team.\n\nAt my current role at AtoB Supplychain Technologies, I work on payment systems and risk management using Ruby on Rails, integrating Stripe and Highnote APIs. Previously at Logipe Fintech, I engineered a complete financial platform from scratch - building microservices architecture, real-time communication systems, and mobile applications that serve thousands of commercial fleet owners.\n\nKey highlights from my experience:\n• Built and deployed 15+ microservices using Node.js, improving deployment speed by 40%\n• Implemented real-time tracking and WebSocket communication serving live data to fleet owners\n• Led AWS to GCP migration with zero downtime\n• Reduced production incidents by 30% through comprehensive testing and monitoring\n\nI am particularly drawn to {company} because {reason}. I would welcome the opportunity to discuss how my skills and experience align with your needs.\n\nBest regards,\nP N Sumanth\npodonolanasumanth@gmail.com\n+91-7619408618",
+
+  "savedAnswers": {}
 }
