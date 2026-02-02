@@ -1,0 +1,98 @@
+{
+  "name": "P N Sumanth",
+  "email": "podonolanasumanth@gmail.com",
+  "phone": "+91-7619408618",
+  "linkedin": "https://linkedin.com/in/pnsumanth",
+  "github": "https://github.com/sumanthpn07",
+  "location": "Bangalore, India",
+  "currentLocation": "USA - San Francisco/Bangalore",
+  "yearsOfExperience": 5,
+  "currentTitle": "Software Developer",
+  "currentCompany": "AtoB Supplychain Technologies",
+
+  "targetRoles": [
+    "Software Engineer",
+    "Software Developer",
+    "Full Stack Developer",
+    "Backend Engineer",
+    "Senior Software Engineer",
+    "Node.js Developer",
+    "React Developer"
+  ],
+
+  "preferredLocations": [
+    "Remote",
+    "San Francisco",
+    "Bangalore",
+    "USA",
+    "India"
+  ],
+
+  "skills": {
+    "languages": ["JavaScript", "Ruby", "TypeScript", "Bash", "C/C++", "Java", "Solidity", "SQL", "NoSQL"],
+    "frameworks": ["Node.js", "ReactJS", "Ruby on Rails", "TensorFlow", "React Native", "NextJS", "Socket.IO", "gRPC", "Whatsapp API"],
+    "tools": ["Kubernetes", "Jenkins", "Grafana", "Docker", "GIT", "PostgreSQL", "MySQL", "MongoDB", "OTA", "Graphite"],
+    "platforms": ["AWS", "GCP", "Azure", "Notion", "Mixpanel"]
+  },
+
+  "education": {
+    "degree": "Bachelor of Technology - CSE, Cloud Technology and Information Security",
+    "university": "JAIN (Deemed-to-be University), Faculty of Engineering & Technology (JU-FET)",
+    "location": "Bangalore, India",
+    "duration": "July 2018 - June 2022"
+  },
+
+  "workAuthorization": "Authorized to work in India, may require sponsorship for USA",
+
+  "experience": [
+    {
+      "company": "AtoB Supplychain Technologies",
+      "title": "Software Developer",
+      "location": "USA - San Francisco/Bangalore",
+      "duration": "Jan 2025 - Present",
+      "highlights": [
+        "Payment Systems & Risk Management using Ruby on Rails, Stripe, Highnote APIs",
+        "Improved operational efficiency by 35%",
+        "Implemented comprehensive RSpec test coverage, reducing production incidents by 30%"
+      ]
+    },
+    {
+      "company": "Logipe Fintech Pvt. Ltd.",
+      "title": "Software Developer",
+      "location": "Bangalore",
+      "duration": "Feb 2022 - Dec 2024",
+      "highlights": [
+        "Built full-stack financial platform for fleet owners using Node.js, React.js, Angular",
+        "Microservice architecture with SQS, WAF, gRPC",
+        "Deployed services in Kubernetes, migrated AWS to GCP",
+        "Built real-time systems with Socket.IO and WhatsApp chat integration"
+      ]
+    },
+    {
+      "company": "CodeQuotient",
+      "title": "Software Developer Intern",
+      "location": "Remote",
+      "duration": "Nov 2021 - Feb 2022",
+      "highlights": [
+        "Full stack development training",
+        "API integrations for 10 enterprise partners"
+      ]
+    }
+  ],
+
+  "projects": [
+    "WeCon - Video calling app with WebRTC in Kotlin",
+    "Ecommerce Application - MERN stack",
+    "Dwitter - Decentralized social media with Solidity and Ethereum"
+  ],
+
+  "commonQuestions": {
+    "whyThisCompany": "I'm excited about {company} because of its innovative approach to solving real-world problems. My experience building scalable systems at AtoB and Logipe, combined with my expertise in {relevantSkill}, makes me confident I can contribute meaningfully to your team.",
+    "whyThisRole": "This role aligns perfectly with my background in full-stack development and my passion for building robust, scalable systems. At Logipe, I engineered a complete financial platform from scratch, and I'm eager to bring that same drive to {company}.",
+    "salary": "Negotiable based on the role and responsibilities",
+    "startDate": "Immediately / 2 weeks notice",
+    "relocation": "Open to relocation",
+    "remoteWork": "Prefer remote but open to hybrid",
+    "coverLetterTemplate": "Dear Hiring Team,\n\nI am writing to express my interest in the {jobTitle} position at {company}. With 5 years of experience in full-stack development and a strong background in building scalable systems, I am confident in my ability to contribute to your team.\n\nAt my current role at AtoB Supplychain Technologies, I work on payment systems and risk management using Ruby on Rails and Stripe APIs. Previously at Logipe Fintech, I engineered a complete financial platform from scratch, implementing microservices architecture and real-time communication systems.\n\nI am particularly drawn to {company} because of {reason}. I would welcome the opportunity to discuss how my skills and experience align with your needs.\n\nBest regards,\nP N Sumanth"
+  }
+}
