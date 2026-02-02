@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LazyApply - Automated Job Applications</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="logo">🚀 LazyApply</h1>
+        <span class="tagline">Automated Job Applications</span>
+      </div>
+      <div class="header-right">
+        <button class="btn btn-secondary" onclick="showStats()">📊 Stats</button>
+        <button class="btn btn-secondary" onclick="showProfile()">👤 Profile</button>
+      </div>
+    </header>
+
+    <!-- Search Section -->
+    <section class="search-section">
+      <div class="search-container">
+        <div class="search-row">
+          <div class="search-field">
+            <label for="searchQuery">Job Title</label>
+            <input
+              type="text"
+              id="searchQuery"
+              placeholder="Software Engineer, Full Stack Developer..."
+              value="Software Engineer"
+            >
+          </div>
+          <div class="search-field">
+            <label for="searchLocation">Location</label>
+            <input
+              type="text"
+              id="searchLocation"
+              placeholder="Remote, San Francisco, Bangalore..."
+              value="Remote"
+            >
+          </div>
+          <div class="search-field checkbox-field">
+            <label>
+              <input type="checkbox" id="remoteOnly" checked>
+              Remote Only
+            </label>
+          </div>
+          <button class="btn btn-primary search-btn" onclick="searchJobs()">
+            🔍 Search Jobs
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section">
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <div class="status-left">
+          <span id="jobCount">0 jobs found</span>
+          <span class="separator">|</span>
+          <span id="selectedCount">0 selected</span>
+        </div>
+        <div class="status-right">
+          <button class="btn btn-small" onclick="selectAll()">Select All</button>
+          <button class="btn btn-small" onclick="clearSelection()">Clear</button>
+          <select id="filterStatus" onchange="filterJobs()">
+            <option value="all">All Status</option>
+            <option value="ready">⚪ Ready</option>
+            <option value="needs_input">🟡 Needs Input</option>
+            <option value="applied">🟢 Applied</option>
+            <option value="failed">🔴 Failed</option>
+            <option value="skipped">⚫ Skipped</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Jobs Table -->
+      <div class="jobs-container">
+        <table class="jobs-table" id="jobsTable">
+          <thead>
+            <tr>
+              <th class="col-select"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
+              <th class="col-status">Status</th>
+              <th class="col-title">Job Title</th>
+              <th class="col-company">Company</th>
+              <th class="col-platform">Platform</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="jobsTableBody">
+            <!-- Jobs will be populated here -->
+          </tbody>
+        </table>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">🔍</div>
+          <h3>No jobs yet</h3>
+          <p>Search for jobs to get started</p>
+        </div>
+      </div>
+
+      <!-- Pending Inputs Alert -->
+      <div class="pending-alert" id="pendingAlert" style="display: none;">
+        <span>⚠️ <span id="pendingCount">0</span> jobs need additional information</span>
+        <button class="btn btn-small btn-warning" onclick="showPendingInputs()">Fill All Info</button>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="action-bar">
+        <button class="btn btn-primary btn-large" onclick="applySelected()" id="applyBtn" disabled>
+          🚀 Apply Selected (<span id="applyCount">0</span>)
+        </button>
+        <button class="btn btn-secondary btn-large" onclick="syncToNotion()">
+          📋 Sync to Notion
+        </button>
+      </div>
+    </section>
+
+    <!-- Modals -->
+    <!-- Job Review Modal -->
+    <div class="modal" id="reviewModal">
+      <div class="modal-content modal-large">
+        <div class="modal-header">
+          <h2 id="reviewTitle">Job Title @ Company</h2>
+          <button class="modal-close" onclick="closeModal('reviewModal')">&times;</button>
+        </div>
+        <div class="modal-body" id="reviewBody">
+          <!-- Job details will be populated here -->
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="skipJob()">Skip</button>
+          <button class="btn btn-secondary" onclick="saveForLater()">Save for Later</button>
+          <button class="btn btn-primary" onclick="applyToJob()">🚀 Apply Now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Modal -->
+    <div class="modal" id="inputModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>📝 Additional Information Required</h2>
+          <button class="modal-close" onclick="closeModal('inputModal')">&times;</button>
+        </div>
+        <div class="modal-body" id="inputBody">
+          <!-- Input fields will be populated here -->
+        </div>
+        <div class="modal-footer">
+          <label class="save-checkbox">
+            <input type="checkbox" id="saveAnswers" checked>
+            Save answers for similar questions
+          </label>
+          <div class="modal-buttons">
+            <button class="btn btn-secondary" onclick="closeModal('inputModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="submitInputs()">💾 Save & Apply</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div class="modal" id="statsModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>📊 Application Statistics</h2>
+          <button class="modal-close" onclick="closeModal('statsModal')">&times;</button>
+        </div>
+        <div class="modal-body" id="statsBody">
+          <!-- Stats will be populated here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal" id="profileModal">
+      <div class="modal-content modal-large">
+        <div class="modal-header">
+          <h2>👤 Your Profile</h2>
+          <button class="modal-close" onclick="closeModal('profileModal')">&times;</button>
+        </div>
+        <div class="modal-body" id="profileBody">
+          <!-- Profile will be populated here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-spinner"></div>
+      <p id="loadingText">Loading...</p>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

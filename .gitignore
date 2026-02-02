@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment files
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+
+# Temporary files
+tmp/
+temp/
+
+# Playwright
+playwright-report/
+test-results/
+
+# Screenshots from automation
+screenshots/
+
+# Local data (keep structure, ignore content)
+data/applied-jobs.json
+data/pending-inputs.json
+data/screenshots/
