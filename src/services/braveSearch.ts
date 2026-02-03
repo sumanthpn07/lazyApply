@@ -149,7 +149,7 @@ export async function searchJobs(params: SearchParams): Promise<Job[]> {
       throw new Error(`Brave API error: ${response.status} - ${errorText}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as { web?: { results?: SearchResult[] } };
     const results: SearchResult[] = data.web?.results || [];
 
     logJobSearch(query, results.length);
