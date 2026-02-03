@@ -15,16 +15,18 @@
       "usa": "May require sponsorship"
     }
   },
-
   "professional": {
     "yearsOfExperience": 5,
     "currentTitle": "Software Developer",
     "currentCompany": "AtoB Supplychain Technologies",
     "noticePeriod": "Immediately / 2 weeks",
     "expectedSalary": "Negotiable",
-    "preferredWorkType": ["Remote", "Hybrid", "On-site"]
+    "preferredWorkType": [
+      "Remote",
+      "Hybrid",
+      "On-site"
+    ]
   },
-
   "targetRoles": [
     "Software Engineer",
     "Software Developer",
@@ -37,7 +39,6 @@
     "React Developer",
     "Ruby on Rails Developer"
   ],
-
   "preferredLocations": [
     "Remote",
     "San Francisco, CA",
@@ -45,7 +46,6 @@
     "USA",
     "India"
   ],
-
   "skills": {
     "languages": [
       "JavaScript",
@@ -116,7 +116,6 @@
       "Time Management"
     ]
   },
-
   "education": {
     "degree": "Bachelor of Technology",
     "major": "CSE, Cloud Technology and Information Security",
@@ -134,7 +133,6 @@
       "Databases"
     ]
   },
-
   "experience": [
     {
       "company": "AtoB Supplychain Technologies",
@@ -152,7 +150,13 @@
         "Enhanced system reliability with comprehensive RSpec test coverage",
         "Reduced production incidents by 30%"
       ],
-      "technologies": ["Ruby on Rails", "Stripe API", "Highnote API", "RSpec", "AI/ML"]
+      "technologies": [
+        "Ruby on Rails",
+        "Stripe API",
+        "Highnote API",
+        "RSpec",
+        "AI/ML"
+      ]
     },
     {
       "company": "Logipe Fintech Pvt. Ltd.",
@@ -178,7 +182,24 @@
         "Implemented OTA app releases for React Native iOS/Android app",
         "Achieved 40% reduction in operational inefficiencies"
       ],
-      "technologies": ["Node.js", "React.js", "Next.js", "Angular", "Sequelize", "Kubernetes", "Jenkins", "Grafana", "Socket.IO", "React Native", "TypeScript", "Firebase", "AWS", "GCP", "gRPC", "SQS"]
+      "technologies": [
+        "Node.js",
+        "React.js",
+        "Next.js",
+        "Angular",
+        "Sequelize",
+        "Kubernetes",
+        "Jenkins",
+        "Grafana",
+        "Socket.IO",
+        "React Native",
+        "TypeScript",
+        "Firebase",
+        "AWS",
+        "GCP",
+        "gRPC",
+        "SQS"
+      ]
     },
     {
       "company": "CodeQuotient",
@@ -194,55 +215,60 @@
         "Reduced integration time by 20%",
         "Enhanced platform functionality resulting in 30% reduction in response time"
       ],
-      "technologies": ["Full Stack Development", "API Integration"]
+      "technologies": [
+        "Full Stack Development",
+        "API Integration"
+      ]
     }
   ],
-
   "projects": [
     {
       "name": "WeCon",
       "description": "Engineered a robust video calling application in Kotlin, utilizing WebRTC technology to support high-quality communication; successfully reduced latency by 40%, ensuring a user-friendly interface that facilitated smooth interactions across devices.",
-      "technologies": ["Kotlin", "WebRTC"]
+      "technologies": [
+        "Kotlin",
+        "WebRTC"
+      ]
     },
     {
       "name": "Ecommerce Application",
       "description": "Designed and Constructed a highly functional eCommerce application using the MERN stack (MongoDB, Express.js, React.js, Node.js), showcasing exceptional proficiency in full stack development and delivering a robust, scalable, and user-friendly online shopping experience.",
-      "technologies": ["MongoDB", "Express.js", "React.js", "Node.js", "MERN Stack"]
+      "technologies": [
+        "MongoDB",
+        "Express.js",
+        "React.js",
+        "Node.js",
+        "MERN Stack"
+      ]
     },
     {
       "name": "Dwitter",
       "description": "A decentralized social media application modeled after Twitter, utilizing blockchain technology with Solidity and Ethereum. Designed and implemented smart contracts to manage user interactions and content securely, creating a transparent and immutable platform for decentralized communication.",
-      "technologies": ["Solidity", "Ethereum", "Blockchain", "Smart Contracts"]
+      "technologies": [
+        "Solidity",
+        "Ethereum",
+        "Blockchain",
+        "Smart Contracts"
+      ]
     }
   ],
-
   "commonQuestions": {
     "whyThisCompany": "I'm excited about {company} because of its innovative approach to solving real-world problems. With 5 years of experience building scalable full-stack systems at AtoB and Logipe - including payment platforms, microservices architecture, and real-time communication systems - I'm confident I can contribute meaningfully to your team and help drive impactful solutions.",
-
     "whyThisRole": "This role aligns perfectly with my background in full-stack development and my passion for building robust, scalable systems. At Logipe, I engineered a complete financial platform from scratch serving commercial fleet owners, and at AtoB I've been working on critical payment systems. I'm eager to bring that same drive and expertise to {company}.",
-
     "greatestStrength": "My greatest strength is my ability to architect and build complete systems from scratch. At Logipe, I engineered an entire fintech platform including microservices, real-time tracking, and mobile apps. I combine strong technical skills across the full stack with the ability to understand business requirements and deliver solutions that create real impact.",
-
     "greatestWeakness": "I sometimes get deeply invested in optimizing systems beyond what's immediately necessary. I've learned to balance this by setting clear milestones and focusing on delivering value incrementally while keeping technical excellence in mind for future iterations.",
-
     "whereDoYouSeeYourself": "In 5 years, I see myself leading engineering teams and architecting large-scale distributed systems. I want to continue growing technically while also mentoring other developers and contributing to the strategic technical direction of the company.",
-
     "challengingProject": "At Logipe, I led the migration of all services from AWS to GCP while maintaining zero downtime. This involved coordinating 15 microservices, updating CI/CD pipelines, and ensuring data integrity throughout the transition. The project improved our deployment speed by 40% and reduced infrastructure costs.",
-
     "whyLeavingCurrentJob": "I'm looking for new challenges and opportunities to work on cutting-edge technologies at scale. While I've learned tremendously at my current role, I'm excited about the possibility of contributing to {company}'s mission and growing alongside the team.",
-
     "salary": "I'm flexible on compensation and more focused on finding the right role and team. I'm open to discussing a package that reflects the responsibilities and aligns with the market rate for this position.",
-
     "startDate": "I can start immediately or within 2 weeks, depending on the requirements.",
-
     "relocation": "Yes, I'm open to relocation for the right opportunity.",
-
     "remoteWork": "I'm comfortable with remote, hybrid, or on-site arrangements. I have extensive experience working remotely and collaborating across time zones.",
-
     "visaSponsorship": "For positions in the USA, I would require visa sponsorship. For India-based roles, I am fully authorized to work."
   },
-
   "coverLetterTemplate": "Dear Hiring Team,\n\nI am writing to express my interest in the {jobTitle} position at {company}. With 5 years of experience in full-stack development and a strong background in building scalable, production-grade systems, I am confident in my ability to contribute to your team.\n\nAt my current role at AtoB Supplychain Technologies, I work on payment systems and risk management using Ruby on Rails, integrating Stripe and Highnote APIs. Previously at Logipe Fintech, I engineered a complete financial platform from scratch - building microservices architecture, real-time communication systems, and mobile applications that serve thousands of commercial fleet owners.\n\nKey highlights from my experience:\n• Built and deployed 15+ microservices using Node.js, improving deployment speed by 40%\n• Implemented real-time tracking and WebSocket communication serving live data to fleet owners\n• Led AWS to GCP migration with zero downtime\n• Reduced production incidents by 30% through comprehensive testing and monitoring\n\nI am particularly drawn to {company} because {reason}. I would welcome the opportunity to discuss how my skills and experience align with your needs.\n\nBest regards,\nP N Sumanth\npodonolanasumanth@gmail.com\n+91-7619408618",
-
-  "savedAnswers": {}
+  "savedAnswers": {
+    "whyThisCompany": "i am s o excited",
+    "yearsExperience": "4"
+  }
 }

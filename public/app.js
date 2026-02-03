@@ -7,6 +7,7 @@ let jobs = [];
 let selectedJobs = new Set();
 let currentJob = null;
 let profile = null;
+let automationStatusPoll = null;
 
 // DOM Elements
 const elements = {
@@ -33,6 +34,7 @@ const statusIcons = {
   applied: '🟢',
   failed: '🔴',
   skipped: '⚫',
+  login_required: '🔐',
 };
 
 // Initialize
@@ -202,6 +204,7 @@ function formatStatus(status) {
     applied: 'Applied',
     failed: 'Failed',
     skipped: 'Skipped',
+    login_required: 'Login',
   };
   return labels[status] || status;
 }
@@ -320,7 +323,19 @@ async function applyToSingleJob(jobId) {
 
   try {
     const response = await apiCall(`/jobs/${jobId}/apply`, { method: 'POST' });
-    showToast(response.message, 'success');
+    console.log('Apply response:', response); // Debug logging
+
+    // Check if login is required - handle both response structures
+    const status = response.data?.status || response.status;
+    if (status === 'login_required') {
+      hideLoading();
+      const message = response.message || response.data?.message || 'Please login in the browser window';
+      showLoginAlert(message);
+      startAutomationStatusPoll();
+      return;
+    }
+
+    showToast(response.message || 'Application submitted', 'success');
     await loadJobs();
   } catch (error) {
     showToast(`Failed to apply: ${error.message}`, 'error');
@@ -346,6 +361,10 @@ async function applySelected() {
 
     showToast(response.message, 'success');
     selectedJobs.clear();
+
+    // Start polling for automation status
+    startAutomationStatusPoll();
+
     await loadJobs();
   } catch (error) {
     showToast(`Failed to apply: ${error.message}`, 'error');
@@ -387,20 +406,23 @@ function showInputModal(jobId) {
   currentJob = jobs.find((job) => job.id === jobId);
   if (!currentJob) return;
 
-  const inputs = currentJob.requiredInputs || [
-    {
-      field: 'whyThisCompany',
-      label: `Why are you excited about ${currentJob.company}?`,
-      type: 'textarea',
-      required: true,
-    },
-    {
-      field: 'yearsExperience',
-      label: 'Years of relevant experience',
-      type: 'number',
-      required: true,
-    },
-  ];
+  // Check if requiredInputs has actual items, otherwise use fallback
+  const inputs = (currentJob.requiredInputs && currentJob.requiredInputs.length > 0)
+    ? currentJob.requiredInputs
+    : [
+      {
+        field: 'whyThisCompany',
+        label: `Why are you excited about ${currentJob.company}?`,
+        type: 'textarea',
+        required: true,
+      },
+      {
+        field: 'yearsExperience',
+        label: 'Years of relevant experience',
+        type: 'number',
+        required: true,
+      },
+    ];
 
   document.getElementById('inputBody').innerHTML = `
     <p style="margin-bottom: 20px; color: var(--text-secondary);">
@@ -685,3 +707,125 @@ document.addEventListener('keydown', (e) => {
     });
   }
 });
+
+// =====================
+// Login Alert Functions
+// =====================
+
+// Show login alert
+function showLoginAlert(message) {
+  const loginAlert = document.getElementById('loginAlert');
+  const loginMessage = document.getElementById('loginMessage');
+
+  if (loginMessage) {
+    loginMessage.textContent = message;
+  }
+
+  if (loginAlert) {
+    loginAlert.style.display = 'flex';
+  }
+}
+
+// Hide login alert
+function hideLoginAlert() {
+  const loginAlert = document.getElementById('loginAlert');
+  if (loginAlert) {
+    loginAlert.style.display = 'none';
+  }
+}
+
+// Signal login complete
+async function signalLoginComplete() {
+  showLoading('Continuing application...');
+  hideLoginAlert();
+  stopAutomationStatusPoll();
+
+  try {
+    console.log('Signaling login complete...');
+    const response = await apiCall('/automation/login-complete', { method: 'POST' });
+    console.log('Login complete response:', response);
+
+    // Validate response
+    if (!response || typeof response !== 'object') {
+      throw new Error('Invalid response from server');
+    }
+
+    if (response.success) {
+      showToast(response.message || 'Application continued', 'success');
+    } else {
+      showToast(response.error || 'Failed to continue application', 'error');
+    }
+
+    await loadJobs();
+
+    // Continue polling if there's still activity
+    try {
+      const status = await apiCall('/automation/status');
+      if (status && status.data && (status.data.isActive || status.data.loginRequired)) {
+        startAutomationStatusPoll();
+
+        // If still needs login, show alert again
+        if (status.data.loginRequired) {
+          showLoginAlert(status.data.message || 'Please login in the browser window');
+        }
+      }
+    } catch (statusError) {
+      console.warn('Failed to check automation status:', statusError);
+    }
+  } catch (error) {
+    console.error('Login complete error:', error);
+    showToast(`Error: ${error.message || 'Unknown error'}`, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+// Cancel automation
+async function cancelAutomation() {
+  hideLoginAlert();
+  stopAutomationStatusPoll();
+
+  try {
+    await apiCall('/automation/cancel', { method: 'POST' });
+    showToast('Automation cancelled', 'info');
+    await loadJobs();
+  } catch (error) {
+    showToast(`Error cancelling: ${error.message}`, 'error');
+  }
+}
+
+// Start polling for automation status
+function startAutomationStatusPoll() {
+  if (automationStatusPoll) {
+    return; // Already polling
+  }
+
+  automationStatusPoll = setInterval(async () => {
+    try {
+      const response = await apiCall('/automation/status');
+      const status = response.data;
+
+      if (status.loginRequired) {
+        showLoginAlert(status.message || `Please login to ${status.loginPlatform}`);
+      } else {
+        hideLoginAlert();
+      }
+
+      // Stop polling if automation is complete
+      if (!status.isActive && !status.loginRequired) {
+        stopAutomationStatusPoll();
+        await loadJobs();
+      }
+    } catch (error) {
+      console.error('Status poll error:', error);
+    }
+  }, 2000); // Poll every 2 seconds
+}
+
+// Stop polling
+function stopAutomationStatusPoll() {
+  if (automationStatusPoll) {
+    clearInterval(automationStatusPoll);
+    automationStatusPoll = null;
+  }
+}

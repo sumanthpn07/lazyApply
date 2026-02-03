@@ -1,5 +1,5 @@
 import { chromium, Browser, BrowserContext, Page } from 'playwright';
-import { Job, RequiredInput, Platform } from '../types';
+import { Job, RequiredInput, Platform, AutomationStatus } from '../types';
 import { config } from '../config';
 import { logger, logApplication } from '../utils/logger';
 import { profileService } from './profileService';
@@ -13,6 +13,7 @@ import {
   randomViewport,
   randomUserAgent,
 } from '../utils/antiBot';
+import { detectPlatformFromUrl, getLoginUrl } from '../utils/platformDetector';
 import path from 'path';
 import fs from 'fs';
 
@@ -27,16 +28,24 @@ import { getPlatformHandler } from '../platforms';
 interface ApplicationResult {
   success: boolean;
   jobId: string;
-  status: 'applied' | 'needs_input' | 'failed';
+  status: 'applied' | 'needs_input' | 'failed' | 'login_required';
   message: string;
   requiredInputs?: RequiredInput[];
   screenshotPath?: string;
   error?: string;
+  loginUrl?: string;
 }
 
 interface QueueItem {
   job: Job;
   retryCount: number;
+}
+
+interface LoginState {
+  required: boolean;
+  platform: Platform | null;
+  loginUrl: string | null;
+  jobId: string | null;
 }
 
 class JobApplicator {
@@ -46,6 +55,14 @@ class JobApplicator {
   private isProcessing: boolean = false;
   private isPaused: boolean = false;
   private currentJob: Job | null = null;
+  private activePage: Page | null = null;
+  private loginState: LoginState = {
+    required: false,
+    platform: null,
+    loginUrl: null,
+    jobId: null,
+  };
+  private loginResolve: ((value: boolean) => void) | null = null;
 
   /**
    * Initialize the browser
@@ -96,6 +113,11 @@ class JobApplicator {
    * Close the browser
    */
   async close(): Promise<void> {
+    if (this.activePage) {
+      await this.activePage.close().catch(() => {});
+      this.activePage = null;
+    }
+
     if (this.context) {
       await this.context.close();
       this.context = null;
@@ -105,6 +127,13 @@ class JobApplicator {
       await this.browser.close();
       this.browser = null;
     }
+
+    this.loginState = {
+      required: false,
+      platform: null,
+      loginUrl: null,
+      jobId: null,
+    };
 
     logger.info('Browser closed');
   }
@@ -128,7 +157,6 @@ class JobApplicator {
    */
   async applyToJob(job: Job): Promise<ApplicationResult> {
     this.currentJob = job;
-    let page: Page | null = null;
 
     try {
       logger.info(`Starting application for ${job.title} at ${job.company}`);
@@ -149,10 +177,21 @@ class JobApplicator {
       // Initialize browser if needed
       await this.initialize();
 
-      // Create new page
-      page = await this.createPage();
+      // Create new page or reuse active page
+      if (!this.activePage || this.activePage.isClosed()) {
+        this.activePage = await this.createPage();
+      }
+      const page = this.activePage;
+
+      // Detect platform from URL if not already set correctly
+      const detectedPlatform = detectPlatformFromUrl(job.url);
+      if (job.platform === 'company_website' || job.platform === 'unknown') {
+        job.platform = detectedPlatform;
+        logger.info(`Detected platform: ${detectedPlatform} for URL: ${job.url}`);
+      }
 
       // Navigate to job URL
+      logger.info(`Navigating to: ${job.url}`);
       await page.goto(job.url, { waitUntil: 'domcontentloaded', timeout: 30000 });
       await waitForPageLoad(page);
 
@@ -175,6 +214,35 @@ class JobApplicator {
       // Apply using platform handler
       const result = await handler.apply(page, job, profileService);
 
+      // Handle login required status
+      if (result.status === 'login_required') {
+        logger.info(`Login required for ${job.platform}`);
+
+        // Set login state
+        this.loginState = {
+          required: true,
+          platform: job.platform,
+          loginUrl: result.loginUrl || getLoginUrl(job.platform) || page.url(),
+          jobId: job.id,
+        };
+
+        // Update job status
+        jobStore.updateJobStatus(job.id, 'login_required');
+
+        // Take screenshot
+        const screenshotPath = await this.takeScreenshot(page, job.id, 'login-required');
+
+        // DON'T close the page - keep it open for user to login
+        return {
+          success: false,
+          jobId: job.id,
+          status: 'login_required',
+          message: result.message || `Please login to ${job.platform} in the browser window`,
+          screenshotPath,
+          loginUrl: this.loginState.loginUrl || undefined,
+        };
+      }
+
       // Record application if successful
       if (result.success) {
         rateLimiter.recordApplication(job.platform);
@@ -193,6 +261,10 @@ class JobApplicator {
       );
       result.screenshotPath = screenshotPath;
 
+      // Close page after successful or failed application (not for login_required)
+      await page.close().catch(() => {});
+      this.activePage = null;
+
       return result;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -201,8 +273,10 @@ class JobApplicator {
 
       // Take error screenshot
       let screenshotPath: string | undefined;
-      if (page) {
-        screenshotPath = await this.takeScreenshot(page, job.id, 'error');
+      if (this.activePage && !this.activePage.isClosed()) {
+        screenshotPath = await this.takeScreenshot(this.activePage, job.id, 'error');
+        await this.activePage.close().catch(() => {});
+        this.activePage = null;
       }
 
       return {
@@ -214,11 +288,138 @@ class JobApplicator {
         error: errorMessage,
       };
     } finally {
-      // Close the page
-      if (page) {
-        await page.close().catch(() => {});
+      if (!this.loginState.required) {
+        this.currentJob = null;
       }
-      this.currentJob = null;
+    }
+  }
+
+  /**
+   * Continue application after user has logged in
+   */
+  async continueAfterLogin(): Promise<ApplicationResult | null> {
+    if (!this.loginState.required || !this.loginState.jobId) {
+      logger.warn('No pending login to continue');
+      return null;
+    }
+
+    const jobId = this.loginState.jobId;
+    const job = jobStore.getJob(jobId);
+    if (!job) {
+      logger.error('Job not found for login continuation');
+      this.resetLoginState();
+      return null;
+    }
+
+    logger.info(`Continuing application for ${job.title} after login`);
+
+    // Update job status back to applying
+    jobStore.updateJobStatus(job.id, 'applying');
+
+    // If we have an active page, try to continue
+    if (this.activePage && !this.activePage.isClosed()) {
+      try {
+        // Reset login state only after we've saved the job info
+        this.resetLoginState();
+
+        // Navigate back to the job
+        logger.info(`Navigating back to: ${job.url}`);
+        await this.activePage.goto(job.url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await waitForPageLoad(this.activePage);
+
+        // Get handler and try again
+        const handler = getPlatformHandler(job.platform);
+        const result = await handler.apply(this.activePage, job, profileService);
+
+        // Update job status based on result
+        if (result.success) {
+          rateLimiter.recordApplication(job.platform);
+          jobStore.updateJobStatus(job.id, 'applied', {
+            screenshotPath: result.screenshotPath,
+          });
+          logApplication(job.id, job.company, 'success');
+        } else if (result.status === 'needs_input') {
+          jobStore.setRequiredInputs(job.id, result.requiredInputs);
+          logApplication(job.id, job.company, 'needs_input');
+        } else if (result.status === 'login_required') {
+          // Still needs login - restore login state
+          this.loginState = {
+            required: true,
+            platform: job.platform,
+            loginUrl: result.loginUrl || getLoginUrl(job.platform) || this.activePage.url(),
+            jobId: job.id,
+          };
+          jobStore.updateJobStatus(job.id, 'login_required');
+        } else {
+          jobStore.updateJobStatus(job.id, 'failed', {
+            error: result.error,
+            screenshotPath: result.screenshotPath,
+          });
+          logApplication(job.id, job.company, 'failed');
+        }
+
+        // Take screenshot (only if not still requiring login)
+        if (result.status !== 'login_required') {
+          try {
+            const screenshotPath = await this.takeScreenshot(
+              this.activePage,
+              job.id,
+              result.success ? 'success' : 'final'
+            );
+            result.screenshotPath = screenshotPath;
+          } catch (e) {
+            logger.warn('Failed to take screenshot:', e);
+          }
+
+          // Close page
+          await this.activePage.close().catch(() => {});
+          this.activePage = null;
+        }
+
+        return result;
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        logger.error(`Continue after login failed: ${errorMessage}`);
+
+        // Ensure login state is reset on error
+        this.resetLoginState();
+
+        if (this.activePage && !this.activePage.isClosed()) {
+          await this.activePage.close().catch(() => {});
+          this.activePage = null;
+        }
+
+        jobStore.updateJobStatus(job.id, 'failed', { error: errorMessage });
+
+        return {
+          success: false,
+          jobId: job.id,
+          status: 'failed',
+          message: `Application failed after login: ${errorMessage}`,
+          error: errorMessage,
+        };
+      }
+    } else {
+      // No active page - reset login state and retry from scratch
+      logger.info('No active page, retrying application from scratch');
+      this.resetLoginState();
+      return this.applyToJob(job);
+    }
+  }
+
+  /**
+   * Reset login state
+   */
+  private resetLoginState(): void {
+    this.loginState = {
+      required: false,
+      platform: null,
+      loginUrl: null,
+      jobId: null,
+    };
+    if (this.loginResolve) {
+      this.loginResolve(true);
+      this.loginResolve = null;
     }
   }
 
@@ -263,7 +464,7 @@ class JobApplicator {
    * Process the queue
    */
   async processQueue(): Promise<void> {
-    if (this.isProcessing || this.isPaused) {
+    if (this.isProcessing || this.isPaused || this.loginState.required) {
       return;
     }
 
@@ -271,7 +472,7 @@ class JobApplicator {
     logger.info('Starting queue processing...');
 
     try {
-      while (this.queue.length > 0 && !this.isPaused) {
+      while (this.queue.length > 0 && !this.isPaused && !this.loginState.required) {
         const item = this.queue.shift();
         if (!item) break;
 
@@ -282,6 +483,14 @@ class JobApplicator {
 
         // Apply to job
         const result = await this.applyToJob(job);
+
+        // Handle login required - pause processing
+        if (result.status === 'login_required') {
+          logger.info('Pausing queue - login required');
+          // Put job back in queue
+          this.queue.unshift({ job, retryCount });
+          break;
+        }
 
         // Update job in store
         if (result.success) {
@@ -305,7 +514,7 @@ class JobApplicator {
         }
 
         // Add delay between applications
-        if (this.queue.length > 0 && !this.isPaused) {
+        if (this.queue.length > 0 && !this.isPaused && !this.loginState.required) {
           const delay = rateLimiter.getRandomDelay(job.platform);
           logger.info(`Waiting ${Math.round(delay / 1000)} seconds before next application...`);
           await randomDelay(delay, delay + 30000);
@@ -352,11 +561,45 @@ class JobApplicator {
   }
 
   /**
+   * Get full automation status including login state
+   */
+  getAutomationStatus(): AutomationStatus {
+    return {
+      isActive: this.isProcessing || this.loginState.required,
+      isPaused: this.isPaused,
+      loginRequired: this.loginState.required,
+      loginPlatform: this.loginState.platform || undefined,
+      loginUrl: this.loginState.loginUrl || undefined,
+      currentJob: this.currentJob || undefined,
+      queueLength: this.queue.length,
+      message: this.loginState.required
+        ? `Please login to ${this.loginState.platform} in the browser window`
+        : this.isProcessing
+        ? `Processing application for ${this.currentJob?.company || 'job'}`
+        : 'Ready',
+    };
+  }
+
+  /**
    * Clear the queue
    */
   clearQueue(): void {
     this.queue = [];
     logger.info('Queue cleared');
+  }
+
+  /**
+   * Get current active page (for debugging)
+   */
+  getActivePage(): Page | null {
+    return this.activePage;
+  }
+
+  /**
+   * Check if login is pending
+   */
+  isLoginPending(): boolean {
+    return this.loginState.required;
   }
 }
 

@@ -36,12 +36,17 @@ export class WellfoundHandler extends BasePlatformHandler {
       // Check if logged in
       const isLoggedIn = await this.checkLogin(page);
       if (!isLoggedIn) {
+        this.log('Not logged in to Wellfound - navigating to login page', 'info');
+        // Navigate to login page
+        await page.goto('https://wellfound.com/login', { waitUntil: 'domcontentloaded' });
+        await randomDelay(1000, 2000);
+
         return {
           success: false,
           jobId: job.id,
-          status: 'failed',
-          message: 'Not logged in to Wellfound. Please log in manually first.',
-          error: 'Not logged in to Wellfound',
+          status: 'login_required' as const,
+          message: 'Please login to Wellfound in the browser window, then click Continue',
+          loginUrl: 'https://wellfound.com/login',
         };
       }
 

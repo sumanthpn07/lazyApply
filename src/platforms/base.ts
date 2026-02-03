@@ -8,6 +8,7 @@ import {
   humanScroll,
   waitForPageLoad,
 } from '../utils/antiBot';
+import { getLoginUrl } from '../utils/platformDetector';
 import path from 'path';
 
 /**
@@ -29,11 +30,12 @@ export interface ProfileServiceInterface {
 export interface ApplicationResult {
   success: boolean;
   jobId: string;
-  status: 'applied' | 'needs_input' | 'failed';
+  status: 'applied' | 'needs_input' | 'failed' | 'login_required';
   message: string;
   requiredInputs?: RequiredInput[];
   screenshotPath?: string;
   error?: string;
+  loginUrl?: string;
 }
 
 /**
@@ -380,5 +382,204 @@ export abstract class BasePlatformHandler {
     }
 
     return null;
+  }
+
+  /**
+   * Navigate to login page for this platform
+   */
+  protected async navigateToLogin(page: Page): Promise<string | null> {
+    const loginUrl = getLoginUrl(this.platform);
+    if (loginUrl) {
+      await page.goto(loginUrl, { waitUntil: 'domcontentloaded' });
+      await waitForPageLoad(page);
+      return loginUrl;
+    }
+    return null;
+  }
+
+  /**
+   * Attempt to find and click a submit/apply button on a generic page
+   */
+  protected async attemptGenericSubmit(page: Page): Promise<boolean> {
+    const submitSelectors = [
+      // Standard form buttons
+      'button[type="submit"]',
+      'input[type="submit"]',
+
+      // Apply buttons
+      'button:has-text("Apply")',
+      'button:has-text("Apply Now")',
+      'button:has-text("Apply for this job")',
+      'a:has-text("Apply")',
+      'a:has-text("Apply Now")',
+
+      // Submit buttons
+      'button:has-text("Submit")',
+      'button:has-text("Submit Application")',
+      'button:has-text("Send Application")',
+
+      // Continue/Next buttons
+      'button:has-text("Continue")',
+      'button:has-text("Next")',
+
+      // Common class patterns
+      '.apply-button',
+      '.submit-button',
+      '.btn-apply',
+      '.btn-submit',
+      '[data-test="apply-button"]',
+      '[data-testid="apply-button"]',
+    ];
+
+    for (const selector of submitSelectors) {
+      try {
+        const button = await page.$(selector);
+        if (button) {
+          const isVisible = await button.isVisible();
+          const isDisabled = await button.getAttribute('disabled');
+
+          if (isVisible && !isDisabled) {
+            this.log(`Found submit button: ${selector}`, 'info');
+            await humanClick(page, selector);
+            await randomDelay(2000, 3000);
+
+            // Wait for potential navigation or modal
+            await page.waitForLoadState('networkidle').catch(() => {});
+
+            return true;
+          }
+        }
+      } catch {
+        // Try next selector
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if we're on a login page
+   */
+  protected async isLoginPage(page: Page): Promise<boolean> {
+    const loginIndicators = [
+      'input[type="password"]',
+      'form[action*="login"]',
+      'form[action*="signin"]',
+      'button:has-text("Sign in")',
+      'button:has-text("Log in")',
+      'a:has-text("Forgot password")',
+      '#login-form',
+      '.login-form',
+      '[data-test="login-form"]',
+    ];
+
+    for (const selector of loginIndicators) {
+      if (await this.elementExists(page, selector)) {
+        return true;
+      }
+    }
+
+    // Check URL patterns
+    const url = page.url().toLowerCase();
+    return url.includes('/login') || url.includes('/signin') || url.includes('/auth');
+  }
+
+  /**
+   * Wait for user to complete login
+   * Returns true when login is detected, false on timeout
+   */
+  protected async waitForLoginCompletion(
+    page: Page,
+    timeout: number = 300000
+  ): Promise<boolean> {
+    const startTime = Date.now();
+    const checkInterval = 2000; // Check every 2 seconds
+
+    while (Date.now() - startTime < timeout) {
+      // Check if we're no longer on a login page
+      const stillOnLogin = await this.isLoginPage(page);
+      if (!stillOnLogin) {
+        this.log('Login completed - no longer on login page', 'info');
+        return true;
+      }
+
+      // Wait before next check
+      await randomDelay(checkInterval, checkInterval + 500);
+    }
+
+    return false;
+  }
+
+  /**
+   * Find all visible form fields on the page
+   */
+  protected async findFormFields(page: Page): Promise<string[]> {
+    const fieldSelectors = [
+      'input[type="text"]',
+      'input[type="email"]',
+      'input[type="tel"]',
+      'input[type="url"]',
+      'input:not([type])',
+      'textarea',
+      'select',
+    ];
+
+    const fields: string[] = [];
+
+    for (const selector of fieldSelectors) {
+      const elements = await page.$$(selector);
+      for (const el of elements) {
+        const isVisible = await el.isVisible();
+        if (isVisible) {
+          const name = await el.getAttribute('name');
+          const id = await el.getAttribute('id');
+          const placeholder = await el.getAttribute('placeholder');
+          fields.push(name || id || placeholder || selector);
+        }
+      }
+    }
+
+    return fields;
+  }
+
+  /**
+   * Try to find an apply button and click it to open application form
+   * Named differently to avoid conflict with platform-specific implementations
+   */
+  protected async findAndClickApplyButton(page: Page): Promise<boolean> {
+    const applyButtonSelectors = [
+      'button:has-text("Apply")',
+      'a:has-text("Apply")',
+      'button:has-text("Easy Apply")',
+      'button:has-text("Apply Now")',
+      'a:has-text("Apply Now")',
+      'button:has-text("Apply for this position")',
+      'button:has-text("Apply for this job")',
+      '.apply-button',
+      '.btn-apply',
+      '[data-test="apply-button"]',
+      '[data-testid="apply-button"]',
+      '#apply-button',
+      'a[href*="apply"]',
+    ];
+
+    for (const selector of applyButtonSelectors) {
+      try {
+        const button = await page.$(selector);
+        if (button) {
+          const isVisible = await button.isVisible();
+          if (isVisible) {
+            this.log(`Clicking apply button: ${selector}`, 'info');
+            await humanClick(page, selector);
+            await randomDelay(1500, 2500);
+            return true;
+          }
+        }
+      } catch {
+        // Try next selector
+      }
+    }
+
+    return false;
   }
 }

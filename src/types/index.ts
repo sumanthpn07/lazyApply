@@ -37,7 +37,20 @@ export type JobStatus =
   | 'applying'        // 🔵 Currently processing
   | 'applied'         // 🟢 Successfully applied
   | 'failed'          // 🔴 Application failed
-  | 'skipped';        // ⚫ User skipped
+  | 'skipped'         // ⚫ User skipped
+  | 'login_required'; // 🟠 Waiting for user to login
+
+// Automation status for UI
+export interface AutomationStatus {
+  isActive: boolean;
+  isPaused: boolean;
+  loginRequired: boolean;
+  loginPlatform?: Platform;
+  loginUrl?: string;
+  currentJob?: Job;
+  queueLength: number;
+  message?: string;
+}
 
 export interface RequiredInput {
   field: string;

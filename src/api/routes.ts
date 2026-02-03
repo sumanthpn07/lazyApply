@@ -602,6 +602,89 @@ router.get('/platforms', (req: Request, res: Response) => {
 });
 
 /**
+ * GET /api/automation/status
+ * Get current automation status including login requirements
+ */
+router.get('/automation/status', (req: Request, res: Response) => {
+  const status = jobApplicator.getAutomationStatus();
+  res.json({
+    success: true,
+    data: status,
+  });
+});
+
+/**
+ * POST /api/automation/login-complete
+ * Signal that user has completed login and continue application
+ */
+router.post('/automation/login-complete', async (req: Request, res: Response) => {
+  try {
+    if (!jobApplicator.isLoginPending()) {
+      return res.status(400).json({
+        success: false,
+        error: 'No pending login to continue',
+      });
+    }
+
+    const result = await jobApplicator.continueAfterLogin();
+
+    if (result) {
+      res.json({
+        success: result.success,
+        message: result.message,
+        data: {
+          jobId: result.jobId,
+          status: result.status,
+          requiredInputs: result.requiredInputs,
+          screenshotPath: result.screenshotPath,
+        },
+      });
+    } else {
+      res.json({
+        success: false,
+        error: 'Failed to continue application',
+      });
+    }
+
+    // Resume queue processing if there are more jobs
+    if (!jobApplicator.isLoginPending()) {
+      jobApplicator.processQueue().catch((error) => {
+        logger.error('Queue processing error after login:', error);
+      });
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Login continue error:', error);
+    res.status(500).json({
+      success: false,
+      error: errorMessage,
+    });
+  }
+});
+
+/**
+ * POST /api/automation/cancel
+ * Cancel current automation and close browser
+ */
+router.post('/automation/cancel', async (req: Request, res: Response) => {
+  try {
+    await jobApplicator.close();
+    jobApplicator.clearQueue();
+
+    res.json({
+      success: true,
+      message: 'Automation cancelled and browser closed',
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({
+      success: false,
+      error: errorMessage,
+    });
+  }
+});
+
+/**
  * DELETE /api/jobs
  * Clear all jobs
  */

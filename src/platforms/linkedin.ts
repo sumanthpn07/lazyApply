@@ -35,12 +35,17 @@ export class LinkedInHandler extends BasePlatformHandler {
       // Check if logged in
       const isLoggedIn = await this.checkLogin(page);
       if (!isLoggedIn) {
+        this.log('Not logged in to LinkedIn - navigating to login page', 'info');
+        // Navigate to login page
+        await page.goto('https://www.linkedin.com/login', { waitUntil: 'domcontentloaded' });
+        await randomDelay(1000, 2000);
+
         return {
           success: false,
           jobId: job.id,
-          status: 'failed',
-          message: 'Not logged in to LinkedIn. Please log in manually first.',
-          error: 'Not logged in to LinkedIn',
+          status: 'login_required' as const,
+          message: 'Please login to LinkedIn in the browser window, then click Continue',
+          loginUrl: 'https://www.linkedin.com/login',
         };
       }
 
